@@ -1,0 +1,219 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+:root {
+  --font-size: 16px;
+  --background: #ffffff;
+  --foreground: oklch(0.145 0 0);
+  --card: #ffffff;
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #030213;
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.95 0.0058 264.53);
+  --secondary-foreground: #030213;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --destructive: #d4183d;
+  --destructive-foreground: #ffffff;
+  --border: rgba(0, 0, 0, 0.1);
+  --input: transparent;
+  --input-background: #f3f3f5;
+  --switch-background: #cbced4;
+  --font-weight-medium: 500;
+  --font-weight-normal: 400;
+  --ring: oklch(0.708 0 0);
+  --radius: 0.625rem;
+
+  /* Header offset - default value, overwritten by JS ResizeObserver */
+  --header-offset: 140px;
+
+  /* Subtle art colors */
+  --accent-primary: #2C2C2C;
+  --accent-secondary: #5A5A5A;
+  --accent-light: #8A8A8A;
+
+  /* Consistent transition timings */
+  --transition-fast: 150ms;
+  --transition-normal: 300ms;
+  --transition-slow: 500ms;
+  --transition-slower: 700ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+}
+
+/* Scroll offset for fixed header - applies to all sections with id */
+section[id] {
+  scroll-margin-top: var(--header-offset);
+}
+
+/* ============================================
+   ANIMATION PERFORMANCE OPTIMIZATIONS
+   Improve first-load animation smoothness
+   ============================================ */
+
+/* GPU-accelerated transforms for smoother animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Hero image - prepare for scale animation */
+.hero-image {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
+/* Remove will-change after animations complete to free memory */
+.hero-image.loaded {
+  will-change: auto;
+}
+
+/* Optimize motion elements */
+[data-framer-component-type] {
+  transform: translateZ(0);
+}
+
+/* Content visibility optimization for off-screen sections */
+.content-visibility-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 500px;
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   For users who prefer reduced motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep some minimal transitions for usability */
+  a,
+  button,
+  input,
+  select,
+  textarea {
+    transition-duration: 0.1s !important;
+  }
+}
+
+/* ============================================
+   FOCUS VISIBLE STYLES
+   Better keyboard navigation visibility
+   ============================================ */
+:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+/* For dark backgrounds */
+.bg-black :focus-visible,
+.bg-\[#1a1a1a\] :focus-visible {
+  outline-color: white;
+}
+
+/* For light backgrounds */
+.bg-white :focus-visible {
+  outline-color: black;
+}
+
+/* ============================================
+   HOVER GLOW EFFECTS
+   Subtle glow on interactive elements
+   ============================================ */
+.hover-glow {
+  transition: box-shadow var(--transition-normal) var(--ease-out);
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+/* Gallery card hover effect */
+.gallery-card {
+  transition: transform var(--transition-slow) var(--ease-out),
+  box-shadow var(--transition-slow) var(--ease-out);
+}
+
+.gallery-card:hover {
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.15),
+  0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Button hover lift effect - REMOVED, kept for reference */
+/* .btn-lift - removed as it was not looking good */
+
+/* ============================================
+   IMAGE LOADING STATES
+   Smooth image appearance
+   ============================================ */
+img {
+  opacity: 1;
+  transition: opacity var(--transition-normal) var(--ease-out);
+}
+
+img[loading] {
+  opacity: 0;
+}
+
+/* ============================================
+   SELECTION STYLES
+   Custom text selection colors
+   ============================================ */
+::selection {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.bg-white ::selection {
+  background-color: rgba(0, 0, 0, 0.2);
+  color: black;
+}
+
+/* ============================================
+   SMOOTH SCROLLBAR (webkit)
+   ============================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 5px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
