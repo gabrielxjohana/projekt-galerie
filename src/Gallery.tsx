@@ -39,30 +39,37 @@ function computeGridSpan(dimensions: string): GridSpan {
   const isMonumental = width > 200 || height > 200;
 
   // Monumental / extra-large works (e.g. Velká zabíjačka 240×400)
-  if (isMonumental && aspectRatio > 1.3) {
-    return { colSpan: 3, rowSpan: 2 };
+  // Use 2×2 instead of 3×2 — fits 4-col grid better and leaves room for neighbours
+  if (isMonumental) {
+    return { colSpan: 2, rowSpan: 2 };
   }
 
-  // Clear portrait (taller than wide) — e.g. Sedící akt 100×70, Zátiší 93×62
-  if (aspectRatio < 0.8) {
+  // Clear portrait (taller than wide) — e.g. Zátiší 93×62 (AR 0.67), Milada 65×50 (AR 0.77)
+  if (aspectRatio < 0.85) {
     return { colSpan: 1, rowSpan: 2 };
   }
 
-  // Strong landscape (clearly wider than tall) — e.g. Hukvaldy/Potok 61×80
-  if (aspectRatio > 1.45) {
+  // Landscape — wider than tall (AR > 1.2)
+  // Hukvaldy/Potok (1.31), Symbol Přírody (1.45), Po Směně (1.30), Císařský Řez (1.27)
+  if (aspectRatio > 1.2) {
     return { colSpan: 2, rowSpan: 1 };
   }
 
-  // Near-square or moderate landscape/portrait — everything else
-  // AR ~0.8–1.45: Milada (0.77→portrait handled above), Symbol Přírody (1.45→edge),
-  // Po Směně (1.30), Císařský Řez (1.27)
+  // Near-square — AR ~0.85–1.2
   return { colSpan: 1, rowSpan: 1 };
 }
 
+// Static class map — Tailwind JIT cannot detect interpolated classes like `md:col-span-${n}`
+const SPAN_CLASS_MAP: Record<string, string> = {
+  "1-1": "md:col-span-1 md:row-span-1",
+  "1-2": "md:col-span-1 md:row-span-2",
+  "2-1": "md:col-span-2 md:row-span-1",
+  "2-2": "md:col-span-2 md:row-span-2",
+  "3-2": "md:col-span-3 md:row-span-2",
+};
+
 function spanToClassName({ colSpan, rowSpan }: GridSpan): string {
-  const col = colSpan > 1 ? `md:col-span-${colSpan}` : "md:col-span-1";
-  const row = rowSpan > 1 ? `md:row-span-${rowSpan}` : "md:row-span-1";
-  return `${col} ${row}`;
+  return SPAN_CLASS_MAP[`${colSpan}-${rowSpan}`] ?? "md:col-span-1 md:row-span-1";
 }
 
 // --- Artwork data (no manual spans) ---
