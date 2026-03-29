@@ -44,7 +44,6 @@ export function Hero({ animationKey, onFullscreenToggle }: HeroProps) {
 
   // Track if image is ready for smooth animation
   const [isImageReady, setIsImageReady] = useState(false);
-  const imageRef = useRef<HTMLImageElement>(null);
 
   // Fullscreen state
   const [isFullscreen, setIsFullscreen] = useState(false);
