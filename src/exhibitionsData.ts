@@ -2,7 +2,7 @@
 
 // Importy plakátů
 import hukvaldy2026 from './photos/exhibitions/hukvaldy unor 2026.jpg';
-import mlejn2026 from './photos/exhibitions/Mlejn brezen 2026.jpeg';
+import mlejn2026 from './photos/exhibitions/plakat2026.jpg';
 
 
 export interface Exhibition {
@@ -25,6 +25,19 @@ export interface Exhibition {
 export const exhibitions: Exhibition[] = [
     {
         id: 1,
+        title: 'Vzpomínka na Antonína Kroču',
+        venue: 'Galerie Mlejn',
+        location: 'Moravská Ostrava, Nádražní 3136/138A',
+        dateFrom: '26. 3. 2026',
+        dateTo: '20. 4. 2026',
+        status: 'current',
+        confirmed: true,
+        posterImage: mlejn2026,
+        vernissage: '26. 3. 2026 v 18:00',
+        mapUrl: 'https://maps.app.goo.gl/bxLCUVzv69Uzc8Y1A',
+    },
+    {
+        id: 2,
         title: 'Obrazové Střípky Antonína Kroči',
         venue: 'Obřadní Síň v Hukvaldském Dvoře',
         location: 'Hukvaldy',
@@ -34,23 +47,10 @@ export const exhibitions: Exhibition[] = [
         status: 'upcoming',
         confirmed: true,
         posterImage: hukvaldy2026,
-        admission: 'Dobrovolné',
         vernissage: '2. 2. 2026 v 17:00',
         mapUrl: 'https://maps.app.goo.gl/qo5HYYGQPBxtGgBw9',
     },
-    {
-        id: 2,
-        title: 'Vernisáž Výstavy Akademického Malíře Antonína Kroči',
-        venue: 'Galerie Mlejn',
-        location: 'Moravská Ostrava, Nádražní 3136/138A',
-        dateTentative: "Březen 2026",
-        status: 'upcoming',
-        confirmed: false,
-        posterImage: mlejn2026,
-        admission: 'Dobrovolné',
-        vernissage: '2. 2. 2026 v 17:00',
-        mapUrl: 'https://maps.app.goo.gl/bxLCUVzv69Uzc8Y1A',
-    },
+
     // Add more exhibitions here
 ];
 

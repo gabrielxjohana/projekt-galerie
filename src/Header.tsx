@@ -317,7 +317,7 @@ export function Header({
                   onClick={() => scrollToSection("about")}
                   className="relative group transition-colors hover:opacity-60 text-white"
               >
-                O Umělci
+                O umělci
                 <span className="absolute -bottom-1 left-0 w-0 h-px bg-white group-hover:w-full transition-all duration-500" />
               </button>
 

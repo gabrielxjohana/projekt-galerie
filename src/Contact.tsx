@@ -1,6 +1,7 @@
-import { Mail, MapPin } from 'lucide-react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import { motion } from 'motion/react';
 import { ImageWithFallback } from './components/figma/ImageWithFallback';
+// @ts-ignore
 import galerie from "./photos/galerie.jpeg";
 
 export function Contact() {
@@ -37,9 +38,10 @@ export function Contact() {
               {/* Contact details */}
               <div className="space-y-6">
                 <div className="group">
-                  <div className="flex items-start gap-6 p-6 bg-[#2a2a2a] border-l-2 border-white hover:bg-[#333333] transition-all">
+                  <div
+                      className="flex items-start gap-6 p-6 bg-[#2a2a2a] border-l-2 border-white hover:bg-[#333333] transition-all">
                     <div className="mt-1 text-white">
-                      <Mail className="w-6 h-6" aria-hidden="true" />
+                      <Mail className="w-6 h-6" aria-hidden="true"/>
                     </div>
                     <div>
                       <p className="text-sm uppercase tracking-wider text-gray-400 mb-2">Email</p>
@@ -53,10 +55,28 @@ export function Contact() {
                   </div>
                 </div>
 
+
                 <div className="group">
-                  <div className="flex items-start gap-6 p-6 bg-[#2a2a2a] border-l-2 border-white hover:bg-[#333333] transition-all">
+                  <div
+                      className="flex items-start gap-6 p-6 bg-[#2a2a2a] border-l-2 border-white hover:bg-[#333333] transition-all">
                     <div className="mt-1 text-white">
-                      <MapPin className="w-6 h-6" aria-hidden="true" />
+                      <Phone className="w-6 h-6" aria-hidden="true"/>
+                    </div>
+                    <div>
+                      <p className="text-sm uppercase tracking-wider text-gray-400 mb-2">Telefonní číslo</p>
+                      <p className="text-xl text-white">
+                          +420 605 136 552
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+
+                <div className="group">
+                  <div
+                      className="flex items-start gap-6 p-6 bg-[#2a2a2a] border-l-2 border-white hover:bg-[#333333] transition-all">
+                    <div className="mt-1 text-white">
+                      <MapPin className="w-6 h-6" aria-hidden="true"/>
                     </div>
                     <div>
                       <p className="text-sm uppercase tracking-wider text-gray-400 mb-2">Umístění</p>
@@ -83,10 +103,10 @@ export function Contact() {
 
             {/* Right side - Image and quote */}
             <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8 }}
-                viewport={{ once: true }}
+                initial={{opacity: 0, x: 50}}
+                whileInView={{opacity: 1, x: 0}}
+                transition={{duration: 0.8}}
+                viewport={{once: true}}
                 className="relative"
             >
               {/* Gallery image */}
@@ -106,17 +126,30 @@ export function Contact() {
               </div>
 
               {/* Quote box */}
-              <div className="bg-white text-black p-10 relative">
-                <div className="absolute top-6 left-6 text-8xl text-black/10 leading-none" aria-hidden="true">"</div>
-                <blockquote className="relative z-10">
-                  <p className="text-xl leading-relaxed mb-6 italic">
-                    Umění není o dokonalosti, ale o pravdě. O zachycení okamžiku, kdy se duše
-                    otevírá a ukazuje svou nejhlubší podstatu.
-                  </p>
-                  <footer className="text-sm uppercase tracking-wider text-black/70">
-                    — Antonín Kroča
-                  </footer>
-                </blockquote>
+              {/* Quote box */}
+              <div className="flex items-stretch overflow-hidden rounded-lg border border-white/10">
+                <div className="w-1.5 bg-gray-500 flex-shrink-0" />
+                <div className="bg-[#2a2a2a] px-6 py-5 flex items-start gap-4 flex-1">
+                  <div className="mt-0.5 flex-shrink-0 text-gray-400">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="2" y="3" width="16" height="15" rx="2" stroke="currentColor" strokeWidth="1.2" fill="none"/>
+                      <line x1="6" y1="1" x2="6" y2="5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                      <line x1="14" y1="1" x2="14" y2="5" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+                      <line x1="2" y1="8" x2="18" y2="8" stroke="currentColor" strokeWidth="1.2"/>
+                      <circle cx="7" cy="13" r="1.2" fill="currentColor"/>
+                      <circle cx="10" cy="13" r="1.2" fill="currentColor"/>
+                      <circle cx="13" cy="13" r="1.2" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-base mb-1">
+                      Návštěva pouze po předchozí domluvě
+                    </p>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      Galerie není otevřena veřejně. Kontaktujte nás pro sjednání termínu.
+                    </p>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </div>

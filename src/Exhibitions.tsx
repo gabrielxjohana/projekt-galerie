@@ -31,7 +31,6 @@ const getDaysInfo = (exhibition: Exhibition): string | null => {
 };
 
 const getStatusLabel = (status: Exhibition['status'], confirmed: boolean) => {
-    if (!confirmed) return 'V jednání';
     switch (status) {
         case 'current': return 'Právě probíhá';
         case 'upcoming': return 'Nadcházející';
