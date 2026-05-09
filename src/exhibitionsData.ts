@@ -3,6 +3,7 @@
 // Importy plakátů
 import hukvaldy2026 from './photos/exhibitions/hukvaldy unor 2026.jpg';
 import mlejn2026 from './photos/exhibitions/plakat2026.jpg';
+import artofzivot from './photos/exhibitions/artofzivot.png';
 
 
 export interface Exhibition {
@@ -25,6 +26,19 @@ export interface Exhibition {
 export const exhibitions: Exhibition[] = [
     {
         id: 1,
+        title: 'art of život',
+        venue: 'Nová Osmička',
+        location: 'Frýdek-Místek',
+        dateFrom: '15. 5. 2026',
+        dateTo: '17. 5. 2026',
+        description: 'V rámci festivalu bude vystaveno 6 obrazů Antonína Kroči',
+        status: 'upcoming',
+        confirmed: true,
+        posterImage: artofzivot,
+        mapUrl: 'https://maps.app.goo.gl/P7iWU9ziFcdNej2d9',
+    },
+    {
+        id: 2,
         title: 'Vzpomínka na Antonína Kroču',
         venue: 'Galerie Mlejn',
         location: 'Moravská Ostrava, Nádražní 3136/138A',
@@ -37,7 +51,7 @@ export const exhibitions: Exhibition[] = [
         mapUrl: 'https://maps.app.goo.gl/bxLCUVzv69Uzc8Y1A',
     },
     {
-        id: 2,
+        id: 3,
         title: 'Obrazové Střípky Antonína Kroči',
         venue: 'Obřadní Síň v Hukvaldském Dvoře',
         location: 'Hukvaldy',
@@ -50,6 +64,7 @@ export const exhibitions: Exhibition[] = [
         vernissage: '2. 2. 2026 v 17:00',
         mapUrl: 'https://maps.app.goo.gl/qo5HYYGQPBxtGgBw9',
     },
+
 
     // Add more exhibitions here
 ];
