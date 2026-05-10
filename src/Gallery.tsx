@@ -4,24 +4,77 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { scrollToSection } from "./utils/scrollToSection.ts";
 
-
-import kresbaAkt from "./photos/22.jpeg";
 import hukvaldy1 from "./photos/75.jpeg";
 import potok1 from "./photos/91.jpeg";
 import zabijacka from "./photos/103.jpeg";
 import milada from "./photos/milada.jpeg";
 import kytice from "./photos/1351.jpeg";
+import symbol_prirody from "./photos/18.jpeg";
+import po_smene from "./photos/97.jpeg";
+import cisarsky_rez from "./photos/100.jpeg";
+
+// --- Dynamic span computation ---
+
+interface GridSpan {
+  colSpan: number;
+  rowSpan: number;
+}
+
+function parseDimensions(dimensions: string): { width: number; height: number } | null {
+  // Handles "100 × 70 cm", "84 x 122 cm", "240 × 400 cm"
+  const match = dimensions.match(/([\d.]+)\s*[×x]\s*([\d.]+)/i);
+  if (!match) return null;
+  // Convention: height × width (as is standard for artwork dimensions)
+  const height = parseFloat(match[1]);
+  const width = parseFloat(match[2]);
+  return { width, height };
+}
+
+function computeGridSpan(dimensions: string): GridSpan {
+  const parsed = parseDimensions(dimensions);
+  if (!parsed) return { colSpan: 1, rowSpan: 1 };
+
+  const { width, height } = parsed;
+  const aspectRatio = width / height;
+  const isMonumental = width > 200 || height > 200;
+
+  // Monumental / extra-large works (e.g. Velká zabíjačka 240×400)
+  // Use 2×2 instead of 3×2 — fits 4-col grid better and leaves room for neighbours
+  if (isMonumental) {
+    return { colSpan: 2, rowSpan: 2 };
+  }
+
+  // Clear portrait (taller than wide) — e.g. Zátiší 93×62 (AR 0.67), Milada 65×50 (AR 0.77)
+  if (aspectRatio < 0.85) {
+    return { colSpan: 1, rowSpan: 2 };
+  }
+
+  // Landscape — wider than tall (AR > 1.2)
+  // Hukvaldy/Potok (1.31), Symbol Přírody (1.45), Po Směně (1.30), Císařský Řez (1.27)
+  if (aspectRatio > 1.2) {
+    return { colSpan: 2, rowSpan: 1 };
+  }
+
+  // Near-square — AR ~0.85–1.2
+  return { colSpan: 1, rowSpan: 1 };
+}
+
+// Static class map — Tailwind JIT cannot detect interpolated classes like `md:col-span-${n}`
+const SPAN_CLASS_MAP: Record<string, string> = {
+  "1-1": "md:col-span-1 md:row-span-1",
+  "1-2": "md:col-span-1 md:row-span-2",
+  "2-1": "md:col-span-2 md:row-span-1",
+  "2-2": "md:col-span-2 md:row-span-2",
+  "3-2": "md:col-span-3 md:row-span-2",
+};
+
+function spanToClassName({ colSpan, rowSpan }: GridSpan): string {
+  return SPAN_CLASS_MAP[`${colSpan}-${rowSpan}`] ?? "md:col-span-1 md:row-span-1";
+}
+
+// --- Artwork data (no manual spans) ---
 
 const artworks = [
-  {
-    id: 1,
-    title: "Sedící akt",
-    year: "1998",
-    dimensions: "100 × 70 cm",
-    medium: "Uhel, papír",
-    image: kresbaAkt,
-    span: "md:col-span-1 md:row-span-2", // portrét
-  },
   {
     id: 2,
     title: "Hukvaldy",
@@ -29,7 +82,6 @@ const artworks = [
     dimensions: "61 × 80 cm",
     medium: "Olej, sololit",
     image: hukvaldy1,
-    span: "md:col-span-2 md:row-span-1", // na šířku
   },
   {
     id: 3,
@@ -38,7 +90,6 @@ const artworks = [
     dimensions: "61 × 80 cm",
     medium: "Olej, sololit",
     image: potok1,
-    span: "md:col-span-2 md:row-span-1", // na šířku
   },
   {
     id: 4,
@@ -47,7 +98,6 @@ const artworks = [
     dimensions: "93 × 62 cm",
     medium: "Olej, sololit",
     image: kytice,
-    span: "md:col-span-1 md:row-span-2", // portrét
   },
   {
     id: 5,
@@ -56,7 +106,6 @@ const artworks = [
     dimensions: "240 × 400 cm",
     medium: "Olej na plátně",
     image: zabijacka,
-    span: "md:col-span-3 md:row-span-2", // extra široký
   },
   {
     id: 6,
@@ -65,9 +114,39 @@ const artworks = [
     dimensions: "65 × 50 cm",
     medium: "Olej, sololit",
     image: milada,
-    span: "md:col-span-1 md:row-span-1", // čtvercový
+  },
+  {
+    id: 7,
+    title: "Symbol Přírody",
+    year: "1997",
+    dimensions: "84 x 122 cm",
+    medium: "Olej, Syntetika, Sololit",
+    image: symbol_prirody,
+  },
+  {
+    id: 8,
+    title: "Po Směně II",
+    year: "1973",
+    dimensions: "115 x 150 cm",
+    medium: "Olej, Plátno",
+    image: po_smene,
+  },
+  {
+    id: 9,
+    title: "Císařský Řez",
+    year: "1973",
+    dimensions: "114 x 145 cm",
+    medium: "Olej, Plátno",
+    image: cisarsky_rez,
   },
 ];
+
+// Pre-compute spans once
+const artworksWithSpans = artworks.map((artwork) => ({
+  ...artwork,
+  gridSpan: computeGridSpan(artwork.dimensions),
+  spanClass: spanToClassName(computeGridSpan(artwork.dimensions)),
+}));
 
 export function Gallery() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
@@ -105,8 +184,6 @@ export function Gallery() {
   // Keyboard shortcuts and focus trap for lightbox
   useEffect(() => {
     if (!selectedArtwork) return;
-
-    // Focus close button when modal opens
     closeButtonRef.current?.focus();
 
     const handleKeyPress = (e: KeyboardEvent) => {
@@ -114,25 +191,21 @@ export function Gallery() {
       else if (e.key === "ArrowRight") goToNext();
       else if (e.key === "Escape") setSelectedArtwork(null);
 
-      // Focus trap - only Tab key
       if (e.key === "Tab") {
         const focusableElements = modalRef.current?.querySelectorAll(
             'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
         );
-
         if (!focusableElements || focusableElements.length === 0) return;
 
         const firstElement = focusableElements[0] as HTMLElement;
         const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
         if (e.shiftKey) {
-          // Shift + Tab
           if (document.activeElement === firstElement) {
             e.preventDefault();
             lastElement.focus();
           }
         } else {
-          // Tab
           if (document.activeElement === lastElement) {
             e.preventDefault();
             firstElement.focus();
@@ -188,7 +261,6 @@ export function Gallery() {
     const dx = touchDeltaX.current;
     const dy = touchDeltaY.current;
 
-    // Only treat as swipe if it's primarily horizontal (avoid breaking vertical scroll)
     if (Math.abs(dx) > Math.abs(dy) * 1.1) {
       setDragX(dx);
       setSwipeDir(dx < 0 ? "next" : "prev");
@@ -199,7 +271,6 @@ export function Gallery() {
     const dx = touchDeltaX.current;
     const dy = touchDeltaY.current;
 
-    // reset refs
     touchStartX.current = null;
     touchStartY.current = null;
     touchDeltaX.current = 0;
@@ -222,7 +293,6 @@ export function Gallery() {
     const dir: "next" | "prev" = dx < 0 ? "next" : "prev";
     setSwipeDir(dir);
 
-    // Push out in swipe direction, then switch
     const pushOut = dir === "next" ? -window.innerWidth : window.innerWidth;
     setDragX(pushOut);
 
@@ -230,10 +300,7 @@ export function Gallery() {
       if (dir === "next") goToNext();
       else goToPrevious();
 
-      // prepare next card at center
       setDragX(0);
-
-      // keep direction briefly so the new image can enter from correct side
       window.setTimeout(() => setSwipeDir(null), 60);
     }, 140);
   };
@@ -267,9 +334,9 @@ export function Gallery() {
             </div>
           </motion.div>
 
-          {/* Bento grid layout */}
-          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[300px] gap-4">
-            {artworks.map((artwork, index) => (
+          {/* Bento grid layout — grid-flow-dense eliminates gaps */}
+          <div className="grid grid-cols-1 md:grid-cols-4 auto-rows-[280px] gap-4 [grid-auto-flow:dense]">
+            {artworksWithSpans.map((artwork, index) => (
                 <motion.div
                     key={artwork.id}
                     initial={{ opacity: 0, y: 50, scale: 0.95 }}
@@ -277,10 +344,10 @@ export function Gallery() {
                     transition={{
                       duration: 0.6,
                       delay: index * 0.1,
-                      ease: [0.16, 1, 0.3, 1]
+                      ease: [0.16, 1, 0.3, 1],
                     }}
                     viewport={{ once: true, margin: "-50px" }}
-                    className={`gallery-card group relative overflow-hidden bg-black ${artwork.span} cursor-pointer`}
+                    className={`gallery-card group relative overflow-hidden bg-black ${artwork.spanClass} cursor-pointer`}
                     onMouseEnter={() => setHoveredId(artwork.id)}
                     onMouseLeave={() => setHoveredId(null)}
                     onClick={() => setSelectedArtwork(artwork)}
@@ -297,13 +364,17 @@ export function Gallery() {
                     </motion.div>
                   </div>
 
-                  {/* Image wrapper */}
+                  {/* Image wrapper — object-cover ensures full cell utilization */}
                   <motion.div
                       animate={{ scale: hoveredId === artwork.id ? 1.1 : 1 }}
                       transition={{ duration: 0.7, ease: "easeOut" }}
                       className="w-full h-full"
                   >
-                    <ImageWithFallback src={artwork.image} alt={artwork.title} className="w-full h-full object-cover" />
+                    <ImageWithFallback
+                        src={artwork.image}
+                        alt={artwork.title}
+                        className="w-full h-full object-cover"
+                    />
                   </motion.div>
 
                   {/* Gradient border reveal */}
@@ -338,7 +409,9 @@ export function Gallery() {
                           transition={{ duration: 0.3, delay: 0.1 }}
                           className="flex justify-between items-start"
                       >
-                        <div className="text-white/60 text-sm font-mono">{String(index + 1).padStart(2, "0")}</div>
+                        <div className="text-white/60 text-sm font-mono">
+                          {String(index + 1).padStart(2, "0")}
+                        </div>
                         <div className="bg-white/10 backdrop-blur-sm px-3 py-1 rounded-full text-white/80 text-xs">
                           {artwork.year}
                         </div>
@@ -389,7 +462,9 @@ export function Gallery() {
             >
               <div className="absolute inset-0 bg-white transform -translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
               <div className="relative z-10 group-hover:text-black transition-colors duration-300">
-                <p className="text-lg mb-2 opacity-70 group-hover:opacity-100 transition-opacity">Zajímá vás více o dostupných dílech?</p>
+                <p className="text-lg mb-2 opacity-70 group-hover:opacity-100 transition-opacity">
+                  Zajímá vás více o dostupných dílech?
+                </p>
                 <p className="text-3xl font-light">Kontaktujte nás</p>
               </div>
             </button>
@@ -409,7 +484,6 @@ export function Gallery() {
                     onClick={() => setSelectedArtwork(null)}
                     className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[120] flex items-center justify-center p-4 sm:p-6"
                 >
-                  {/* Close button */}
                   <motion.button
                       ref={closeButtonRef}
                       initial={{ opacity: 0, scale: 0.8 }}
@@ -423,7 +497,6 @@ export function Gallery() {
                     <X className="w-6 h-6" aria-hidden="true" />
                   </motion.button>
 
-                  {/* Prev/Next buttons: hide on mobile */}
                   <motion.button
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -456,7 +529,6 @@ export function Gallery() {
                     <ChevronRight className="w-7 h-7 transition-transform group-hover:translate-x-0.5" />
                   </motion.button>
 
-                  {/* Scrollable + swipeable modal content */}
                   <div
                       className="w-full max-w-7xl max-h-[85vh] overflow-y-auto overscroll-contain rounded-xl"
                       onClick={(e) => e.stopPropagation()}
@@ -465,7 +537,6 @@ export function Gallery() {
                       onTouchEnd={handleTouchEnd}
                   >
                     <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 items-start p-4 sm:p-6">
-                      {/* Image (swipe-driven) */}
                       <motion.div
                           key={selectedArtwork.id}
                           initial={{
@@ -494,7 +565,6 @@ export function Gallery() {
                         />
                       </motion.div>
 
-                      {/* Details */}
                       <motion.div
                           key={`details-${selectedArtwork.id}`}
                           initial={{ opacity: 0, x: 50 }}
@@ -514,7 +584,9 @@ export function Gallery() {
                               transition={{ delay: 0.5, duration: 0.8 }}
                               className="h-px bg-white mb-6"
                           />
-                          <h2 id="artwork-title" className="text-5xl md:text-6xl mb-4 tracking-tight">{selectedArtwork.title}</h2>
+                          <h2 id="artwork-title" className="text-5xl md:text-6xl mb-4 tracking-tight">
+                            {selectedArtwork.title}
+                          </h2>
                           <p className="text-2xl text-white/60">{selectedArtwork.year}</p>
                         </div>
 
@@ -535,10 +607,8 @@ export function Gallery() {
 
                         <div className="pt-8 border-t border-white/10">
                           <p className="text-white/70 leading-relaxed mb-6">
-                            Toto dílo je součástí osobní kolekce rodiny a může být k dispozici pro výstavy nebo akvizice. Pro
-                            více informací nás prosím kontaktujte.
+                            Rádi poskytneme informace o dílech z celoživotní tvorby Antonína Kroči, která jsou dostupná pro výstavy i akvizici. Pro více informací nás prosím kontaktujte.
                           </p>
-
                           <button
                               onClick={() => {
                                 setSelectedArtwork(null);

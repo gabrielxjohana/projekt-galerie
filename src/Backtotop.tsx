@@ -5,7 +5,7 @@ import { useAutoScroll } from './contexts/AutoScrollContext';
 
 export function BackToTop() {
     const [isVisible, setIsVisible] = useState(false);
-    const { isAutoScrolling, startAutoScroll, endAutoScroll } = useAutoScroll();
+    const { startAutoScroll, endAutoScroll } = useAutoScroll();
 
     useEffect(() => {
         const toggleVisibility = () => {

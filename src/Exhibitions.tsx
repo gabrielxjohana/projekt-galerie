@@ -30,7 +30,7 @@ const getDaysInfo = (exhibition: Exhibition): string | null => {
     return null;
 };
 
-const getStatusLabel = (status: Exhibition['status'], confirmed: boolean) => {
+const getStatusLabel = (status: Exhibition['status'], _confirmed: boolean) => {
     switch (status) {
         case 'current': return 'Právě probíhá';
         case 'upcoming': return 'Nadcházející';
